@@ -1,0 +1,58 @@
+module flight_graph
+
+    doc"""
+        Airport
+    """
+    def Airport(x in Entity) =
+        airport:id(x, _)
+
+    doc"""
+        City where airport is located.
+    """
+    def located_in(x in Airport, city in City) =
+        state = lookup_state[airport:state[x]] and
+        county = lookup_county[state, airport:county[x]] and
+        city = lookup_city[county, airport:city[x]]
+        from state, county
+
+    def Heliport(x) =
+        airport:fac_type[x] = "HELIPORT"
+
+    def Major(x) =
+        airport:major(x)
+
+    doc"""
+        Indicates whether airport has a control tower
+    """
+    def Control_tower(x) =
+        airport:ctrl_twr(x)
+
+    def coordinate[x] = ^LLA[
+        airport_latitude[x],
+        airport_longitude[x],
+        airport_elevation[x]
+    ]
+
+    def airport_code = airport:code
+    def airport_name = airport:full_name
+    def airport_region = airport:faa_region
+    def facility_type = airport:fac_type
+    def airport_elevation = airport:elevation
+    def airport_latitude = airport:latitude
+    def airport_longitude = airport:longitude
+    def airport_use = airport:fac_use // guess: public vs private?
+    def for_joint_use = airport:joint_use // boolean
+    def airport_distance_from_cbd = airport:cbd_dist // guess: CBD = central business district
+    def airport_direction_to_cdb = airport:cdb_dir // compass direction
+    def airport_site_number = airport:site_number
+    def airport_aeronautical_chart = airport:aero_cht
+    def airport_active_date = airport:act_date
+    def airport_faa_district = airport:faa_dist // lots of "NONE" values
+    def federal_agreement = airport:fed_agree
+
+    doc"""
+        Airport certification and date certified
+    """
+    def airport_certification = airport:cert
+
+end

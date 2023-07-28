@@ -1,0 +1,24 @@
+module flight_graph
+    doc"""
+        State
+    """
+    def State(x in Entity) =
+        ^State(s, x) and
+        airport:state(_, s)
+        from s
+
+    doc"""
+        Two-letter state abbreviation (ANSI, USPS)
+    """
+    def abbr(x in State, s in String) =
+        ^State(s, x) and
+        airport:state(_, s)
+
+    def lookup_state(s in String, x in State) =
+        abbr(x, s)
+
+    def lookup_state(s in String, x in State) =
+        flight_graph:postal_abbrevation(x, s)
+
+    //    ic { function(lookup_state) }
+end

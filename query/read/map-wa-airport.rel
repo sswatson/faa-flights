@@ -1,0 +1,42 @@
+def chart = parse_json["""{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 800,
+  "height": 500,
+  "layer": [ {
+      "projection": { "type": "albersUsa" },
+      "mark": { "type": "geoshape", "fill": "white", "stroke": "black" }
+    },
+    {
+      "encoding": {
+        "longitude": { "field": "lon", "type": "quantitative" },
+        "latitude": { "field": "lat", "type": "quantitative" }
+      },
+      "layer": [
+          { "mark": { "type": "circle", "color": "orange" }},
+          { "mark": { "type": "text", "dy": -10}, "encoding": {
+                      "text": {"field": "name", "type": "nominal"}}}]
+      }
+    ]}
+"""]
+
+def chart[:layer, :[], 1, :data, :values] =
+    flight_graph:geojson[x] from x where flight_graph:abbr(x, "WA")
+
+def chart[:layer, :[], 2, :data, :values, :[]] = json_airports
+
+def output = vegalite:plot[chart]
+
+def json_airports[i] =
+    (:lat, latf); (:lon, lonf); (:name, flight_graph:airport_name[x])
+    from lat, lon, latf, lonf, state, x
+    where
+        sort[my_airports](i, x) and
+        ^LLA(lat, lon, _, flight_graph:coordinate[x]) and
+        ^Degree(latf, lat) and
+        ^Degree(lonf, lon)
+
+def my_airports(x in flight_graph:Airport) =
+    flight_graph:abbr(state, "WA") and
+    flight_graph:located_in(x, state) and
+    flight_graph:Major(x)
+    from state

@@ -1,0 +1,26 @@
+module flight_graph
+
+    def Aircraft(x) =
+        aircraft:tail_num(x, _)
+
+    def model = aircraft_model
+    def model_name[f] = model_name[model[f]]
+    def num_seats[f] = num_seats[model[f]]
+    def manufacturer[f] = manufacturer[model[f]]
+    def aircraft_year_built = aircraft:year_built
+    def aircraft_certification = aircraft:certification
+    def aircraft_serial = aircraft:aircraft_serial
+    def aircraft_certification_issue_date = aircraft:cert_issue_date
+    def Fractional_ownership(x) = aircraft:fract_owner(x)
+    def aircraft_type_id = aircraft:aircraft_type_id
+    def engine_type_id = aircraft:aircraft_engine_type_id
+    def aircraft_last_action_date = aircraft:last_action_date
+    def aircraft_air_worth_date = aircraft:air_worth_date
+    def aircraft_registrant_type_id = aircraft:registrant_type_id
+end
+
+
+def aircraft_model(f, m) =
+    aircraft:aircraft_model_code(f, code) and
+    aircraft_model:aircraft_model_code(m, code)
+    from code

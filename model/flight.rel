@@ -1,0 +1,60 @@
+module flight_graph
+    with flight_graph use Carrier, Airport
+
+    doc"""
+        Flight
+    """
+    def Flight(x) = flight_id(x, _)
+
+    /*
+    def actual_flight(f) =
+        Flight(f) and
+        not flight_cancelled(f) and
+        not flight_diverted(f)
+
+    def arr_delay(f, v) =
+        flight_arrival_offset(f, v)
+    */
+
+    def destination(f in Flight, a in Airport) =
+        flight_destination_code(f, code) and
+        airport_code(a, code)
+        from code
+
+    def origin(f in Flight, a in Airport) =
+        flight_origin(f, code) and
+        airport_code(a, code)
+        from code
+
+    def operated_by(f in Flight, c in Carrier) =
+        flight_carrier_code(f, s) and
+        carrier_code(c, s)
+        from s
+
+    def operates(c in Carrier, f in Flight) =
+        operated_by(f, c)
+
+    def craft(f in Flight, a in Aircraft) =
+        flight_tail_num(f, code) and
+        aircraft:tail_num(a, code)
+        from code
+
+    def arrival_delay[f] = maximum[0, flight_arrival_offset[f]]
+
+    def flight_cancelled = flight:cancelled
+    def flight_diverted = flight:diverted
+    def flight_arrival_offset = flight:arr_delay
+    def flight_departure_offset = flight:dep_delay
+    def flight_destination_code = flight:destination_code
+    def flight_dep_taxi_time = flight:taxi_out
+    def flight_arr_taxi_time = flight:taxi_in
+    def flight_origin = flight:origin
+    def flight_tail_num = flight:tail_num
+    def flight_carrier_code = flight:carrier
+    def flight_id = flight:id
+    def flight_duration = flight:flight_time
+    def flight_departure_time = flight:dep_time
+    def flight_arrival_time = flight:arr_time
+    def flight_number = flight:flight_num
+    def flight_distance = flight:distance
+end

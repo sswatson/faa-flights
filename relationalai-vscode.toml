@@ -1,0 +1,3 @@
+model-directory = "model"
+update-directory = "query/write"
+query-directory = "query/read"

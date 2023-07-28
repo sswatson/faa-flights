@@ -1,0 +1,23 @@
+def insert:carrier_data =
+    load_csv["s3://malloy-faa-flights-data/malloy-carriers-data.csv"]
+
+def insert:airport_data =
+    load_csv["s3://malloy-faa-flights-data/malloy-airports-data.csv"]
+
+def insert:aircraft_data =
+    load_csv["s3://malloy-faa-flights-data/malloy-aircraft-data.csv"]
+
+def insert:aircraft_model_data =
+    load_csv["s3://malloy-faa-flights-data/malloy-aircraft_models-data.csv"]
+
+def insert:flight_data =
+    (0, load_csv["s3://malloy-faa-flights-data/malloy-flights-data-00.csv"]);
+    (1, load_csv["s3://malloy-faa-flights-data/malloy-flights-data-01.csv"]);
+    (2, load_csv["s3://malloy-faa-flights-data/malloy-flights-data-02.csv"]);
+    (3, load_csv["s3://malloy-faa-flights-data/malloy-flights-data-03.csv"]);
+    (4, load_csv["s3://malloy-faa-flights-data/malloy-flights-data-04.csv"]);
+    (5, load_csv["s3://malloy-faa-flights-data/malloy-flights-data-05.csv"]);
+    (6, load_csv["s3://malloy-faa-flights-data/malloy-flights-data-06.csv"]);
+    (7, load_csv["s3://malloy-faa-flights-data/malloy-flights-data-07.csv"]);
+    (8, load_csv["s3://malloy-faa-flights-data/malloy-flights-data-08.csv"]);
+    (9, load_csv["s3://malloy-faa-flights-data/malloy-flights-data-09.csv"])

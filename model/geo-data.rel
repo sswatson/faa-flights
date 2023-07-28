@@ -1,0 +1,20 @@
+@inline
+module geo_dataset_info
+    with dataset_info use table_info, primary_key, rename_column
+
+    def states = table_info[
+        primary_key[:State, :Postal];
+        rename_column[:Postal, :postal_abbrevation];
+        rename_column[:Name, :name]
+    ]
+end
+
+def flight_graph =
+    flight_file_mapping[states_data, geo_dataset_info:states]
+
+def flight_graph:geojson[x] =
+    us_states_geojson:features[:[], i]
+    from i, id
+    where
+        flight_graph:FIPS(x, id) and
+        us_states_geojson(:features, :[], i, :id, id)

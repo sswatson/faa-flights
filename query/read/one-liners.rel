@@ -1,0 +1,20 @@
+with flight_graph use
+    Airport, State, located_in, lookup_state, abbr, name, arrival_delay,
+    flight_arrival_time
+
+
+// states with airports
+def output = Airport.located_in.located_in.located_in.abbr
+
+
+// state label of an airport
+def output = (Airport <: located_in :> State).abbr
+
+// arrival delay by arrival time
+def hours = range[0, 24, 1]
+def output[h in hours] =
+    mean[f.arrival_delay for f
+        where
+           exists(dt:
+            flight_arrival_time(f, dt) and
+            datetime_hour(dt, "America/Los_Angeles", h)) ]

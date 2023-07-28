@@ -1,0 +1,13 @@
+def chart = parse_json["""{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 800,
+  "height": 500,
+  "layer": [ {
+      "projection": { "type": "albersUsa" },
+      "mark": { "type": "geoshape", "fill": "white", "stroke": "black" }
+    }]}
+"""]
+
+def chart[:layer, :[], 1, :data, :values] = us_states_geojson
+
+def output = vegalite:plot[chart]

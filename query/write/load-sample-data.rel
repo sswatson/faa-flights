@@ -1,0 +1,14 @@
+def insert:carrier_data =
+    load_csv["s3://malloy-faa-flights-data/carrier-sample-data.csv"]
+
+def insert:airport_data =
+    load_csv["s3://malloy-faa-flights-data/airport-sample-data.csv"]
+
+def insert:aircraft_data =
+    load_csv["s3://malloy-faa-flights-data/aircraft-sample-data.csv"]
+
+def insert:aircraft_model_data =
+    load_csv["s3://malloy-faa-flights-data/aircraft-model-sample-data.csv"]
+
+def insert:flight_data =
+    (0, load_csv["s3://malloy-faa-flights-data/flight-sample-data.csv"])

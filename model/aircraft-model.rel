@@ -1,0 +1,14 @@
+module flight_graph
+
+    def AircraftModel(x) =
+        aircraft_model:aircraft_model_code(x, _)
+
+    def model_name = aircraft_model:model
+    def num_seats = aircraft_model:seats
+    def engine_type_id = aircraft_model:aircraft_engine_type_id
+    def aircraft_type_id = aircraft_model:aircraft_type_id
+    def manufacturer = aircraft_model:manufacturer
+    def model_speed = aircraft_model:speed // units unknown
+    def model_category_id = aircraft_model:aircraft_category_id
+    def num_engines = aircraft_model:engines // some 0
+end

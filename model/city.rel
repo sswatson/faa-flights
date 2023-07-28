@@ -1,0 +1,33 @@
+module flight_graph
+    doc"""
+        City
+    """
+    def City(x) =
+        lookup_city(_, _, x)
+
+    doc"""
+        City
+    """
+    def lookup_city(county in County, city_name in String, x in Entity) =
+        airport:city(loc, city_name) and
+        airport:county(loc, county_name) and
+        airport:state(loc, state_code) and
+        abbr(state, state_code) and
+        name(county, county_name) and
+        // city names are not unique, so they need to be created relative to the county.
+        // TODO are cities unique in counties??
+        ^City(county, city_name, x)
+        from loc, state, state_code, county_name
+
+    doc"""
+        City name. Not unique.
+    """
+    def name(city in City, s in String) =
+        lookup_city(_, s, city)
+
+    doc"""
+        City is located in County
+    """
+    def located_in(city in City, county in County) =
+        lookup_city(county, _, city)
+end

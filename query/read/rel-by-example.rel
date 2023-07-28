@@ -1,0 +1,123 @@
+with flight_graph use
+    Airport, State, County, abbr, lookup_state, lookup_county,
+    Heliport, located_in, airport_code, airport_name,
+    airport_region, facility_type, airport_elevation, name
+
+/* SQL SELECT vs Rel */
+// Note: Not using ORDER BY
+
+// Projection: SELECT with no GROUP BY
+
+def select_airports =
+    (:code, id, airport_code[id]);
+    (:name, id, airport_name[id]);
+    (:state, id, (located_in[id] :> State));
+    (:region, id, airport_region[id]);
+    (:facility_type, id, facility_type[id]);
+    (:elevation, id, airport_elevation[id])
+    from id
+// Note: use arbitrary arity [] to accommodate Boolean values of the
+//       form true = {()}, false = {}
+
+//ic { count[id: select_airports(id, _, _)] = 6 }
+
+def output = table[select_airports]
+
+// Projection with ORDER BY
+def airports_sorted_by_code[col, i, k, v] =
+    sort[airport_code[_]](i, code) and
+    airport_code(k, code) and
+    select_airports(col, k, v)
+    from code
+
+//def output = table[airports_sorted_by_code]
+
+// Reduction: SELECT with GROUP BY and/or aggregation
+def CA_airports_groupby[fac_type] =
+    count[id:
+        (located_in[id] :> State) = lookup_state["CA"] and
+        fac_type = facility_type[id]
+    ]
+
+//def output = CA_airports_groupby
+
+// Reduction with ORDER BY
+def CA_airports_ordered[i, k, v] =
+    reverse_sort[CA_airports_groupby[_]](i, v) and
+    CA_airports_groupby(k, v)
+
+//def output = CA_airports_ordered
+
+// With total CA airports:
+//def output = CA_airports_ordered; 0, :Total, sum[CA_airports_ordered]
+
+/* SOURCE: A DATA SOURCE FOR QUERIES */
+def elevation_in_meters[id] =
+    feet_to_meters[airport_elevation[id]]
+
+def state_and_county[id in Airport] =
+    concat[
+        concat[abbr[located_in[id] :> State], "-"],
+        name[located_in[id] :> County]
+    ]
+
+def avg_elevation_in_meters[state, fac_type] =
+    average[elevation_in_meters[id] for id where
+        state = (located_in[id] :> State) and
+        fac_type = facility_type[id]
+    ]
+
+def airport_count[state, fac_type] =
+    count[id:
+        state = (located_in[id] :> State) and
+        fac_type = facility_type[id]
+    ]
+
+/* QUERYING AGAINST A SOURCE */
+def heliport:state = abbr
+
+def heliport:airport_count[state] =
+    airport_count[state, "HELIPORT"]
+
+def heliport:avg_elevation_in_meters[state] =
+    avg_elevation_in_meters[state, "HELIPORT"]
+
+//def output = table[heliport]
+
+// With ORDER BY
+def heliport_sorted[col, i, k, v] =
+    reverse_sort[heliport:count_by_state[_]](i, count) and
+    heliport:count_by_state(k, count) and
+    heliport(col, k, v)
+    from count
+
+//def output = table[heliport_sorted]
+
+/* DIMENSIONAL CALCULATIONS ARE NO DIFFERENT FROM COLUMNS */
+def airport_count_by_county[label, county] =
+    count[id in Airport:
+        state = (located_in[id] :> State) and
+        county = (located_in[id] :> County) and
+        label = state_and_county[id]
+        from state
+    ]
+
+//def output = airport_count_by_county
+
+
+/* DEFINING NAMED QUERIES INSIDE A SOURCE */
+// All queries in Rel are named, unless you are in a query cell
+// and omit the "def output"
+def count_by_state[state] =
+    count[id: (located_in[id] :> State) = state]
+
+def count_by_state_sorted(i, state, count) =
+    reverse_sort[count_by_state[_]](i, count) and
+    count_by_state(state, count)
+
+
+/* EXECUTING NAMED QUERIES */
+//def output = count_by_state_sorted
+
+// Replace state IDs with state abbreviations:
+//def output[i] = abbr[id], count_by_state_sorted[i, id] from id

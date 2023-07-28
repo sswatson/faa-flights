@@ -1,0 +1,82 @@
+/*
+ * Entities
+ */
+entity type City = Entity, String
+entity type County = Entity, String
+entity type State = String
+
+entity type Carrier = String
+entity type Aircraft = String
+entity type AircraftModel = String
+entity type Airport = String
+entity type Flight = String
+
+module create_entity
+    def Carrier[x] = ^Carrier[x]
+    def Aircraft[x] = ^Aircraft[x]
+    def AircraftModel[x] = ^AircraftModel[x]
+    def Airport[x] = ^Airport[x]
+    def Flight[x] = ^Flight[x]
+    def State[x] = ^State[x]
+end
+
+
+/*
+ * Value types
+ */
+def LengthUnit = :Feet; :Meters; :Kilometers; :Miles
+value type Length = LengthUnit, Number
+
+value type MonthYear = Int, Int
+
+def parse_month_year[s in String] =
+    ^MonthYear[month, year]
+    from month, year, date
+    where
+        date = parse_date[s, "m/Y"] and
+        month = date_month[date] and
+        year = date_year[date]
+
+@inline
+def (+)(x in Length, y in Length, z in Length) =
+    ^Length(unit, val1, x) and
+    ^Length(unit, val2, y) and
+    ^Length(unit, add[val1, val2], z)
+    from unit, val1, val2
+
+@inline
+def (/)(x in Length, y in Number, z in Length) =
+    ^Length(unit, val1, x) and
+    ^Length(unit, divide[val1, y], z)
+    from unit, val1
+
+def parse_int_feet[s in String] =
+    ^Length:Feet[parse_int[s]]
+
+def feet_to_meters(f in Length, m in Length) =
+    ^Length:Meters(x * 0.3048, m) and
+    ^Length:Feet(x, f)
+    from x
+
+def meters_to_feet(m in Length, f in Length) =
+    ^Length:Feet(x / 0.3048, f) and
+    ^Length:Meters(x, m)
+    from x
+
+/*
+def meters_to_feet(m in Length, f in Length) =
+    feet_to_meters[f, m]
+*/
+
+/************************************************************************
+ * Geographical types
+ */
+
+value type Degree = Number
+
+value type Radian = Number
+
+value type LLA = Degree, Degree, Length
+
+def parse_float_degree[s in String] =
+    ^Degree[parse_float[s]]

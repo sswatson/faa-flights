@@ -1,0 +1,220 @@
+// IMPORTANT NOTE: this is the dump of all working code to generate the flights graph and
+// visualizations. This file needs to be split up and cleaned up.
+
+def chart = parse_json["""{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 800,
+  "height": 500,
+  "legend": null,
+  "layer": [ {
+      "projection": { "type": "albersUsa" },
+      "mark": { "type": "geoshape", "fill": "white", "stroke": "black" }
+    },
+    {
+    "projection": {    "type": "albersUsa"},
+    "mark": {
+        "type":"rule",
+        "strokeWidth": 1},
+        "opacity": 0.5,
+      "encoding": {
+        "longitude": {
+          "field": "lon1",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "lat1",
+          "type": "quantitative"
+        },
+        "longitude2": {"field": "lon2"},
+        "latitude2": {"field": "lat2"},
+        "color": {
+              "type": "quantitative",
+              "field": "flights",
+              "scale": {"range": ["yellow", "red"]}
+              }
+      }
+      },
+    {
+    "projection": {    "type": "albersUsa"},
+      "encoding": {
+        "longitude": { "field": "lon", "type": "quantitative" },
+        "latitude": { "field": "lat", "type": "quantitative" },
+        "size": {"field": "page_rank", "type": "quantitative"}
+      },
+      "layer": [{
+          "mark": {
+              "type": "circle",
+              "color": "purple"
+           }
+        }]
+      }
+    ]}
+"""]
+
+/* old line {
+      "encoding": {
+        "longitude": { "field": "lon1", "type": "quantitative" },
+        "latitude": { "field": "lat1", "type": "quantitative" },
+        "longitude": { "field": "lon2", "type": "quantitative" },
+        "latitude": { "field": "lat1", "type": "quantitative" }
+      },
+      "layer": [
+          { "mark":
+              { "type": "line",
+                "strokeWidth": {"field": "mycolor", "type": "quantitative"}
+                }}]
+}*/
+
+// "color": { "field": "color", "type": "quantitative"}
+//   {
+//       "field": "mycolor",
+//       "type": "quantitative",
+//       "scale": { "scheme": "blueorange", "domain": [1, 2200] }
+// },
+def chart[:layer, :[], 1, :data, :values] = us_states_geojson
+def chart[:layer, :[], 3, :data, :values, :[]] = json_airports3
+def chart[:layer, :[], 2, :data, :values, :[]] = json_flights
+// def chart[:layer, :[], 3, :mark, :color, :[]] = "#a62b46"
+
+// def output = json_airports3
+// def output = json_flights[100]
+def output = vegalite:plot[chart]
+// def output = count[major_airports]
+////////////////////////////////////////////////////////////
+// count[flight_graph:destination]
+// edge: exists(flight_graph:Flight <: flight_graph[edge])
+
+// flight_graph:Flight
+
+// def major_nodes = :Flight
+
+def L =
+    string[label], string[k], string[edge1], string[x1], string[edge2], string[x2]
+    from label in :Flight, k, edge1, x1, edge2, x2
+    where
+       exists(xs...:
+           flight_graph(label, k) and
+           flight_graph(edge1, k, x1, xs...) and
+           flight_graph(edge2, k, x2, xs...) and
+           edge1 = :origin and
+           edge2 = :destination)
+
+def F =
+    string[x1], string[x2]
+    from x1, x2
+    where
+       exists(k, xs...:
+           flight_graph(:Flight, k) and
+           flight_graph(:origin, k, x1, xs...) and
+           flight_graph(:destination, k, x2, xs...)
+           )
+
+def G = x1, x2, k :
+       exists(xs...:
+           flight_graph(:Flight, k) and
+           flight_graph(:origin, k, x1, xs...) and
+           flight_graph(:destination, k, x2, xs...)
+           )
+
+def W = x1, x2, flight_weight :
+    G(x1, x2, _) and
+    flight_weight = count[fi : G(x1, x2, fi)]
+
+def major_airports = k : flight_graph(:Major, k) and flight_graph(:Airport, k)
+
+// major airports
+def M = x1, x2, w : W(x1, x2, w) and
+    major_airports(x1) and
+    major_airports(x2)
+////////////////////////////////////////////////////////////
+def json_airports[i] =
+    (:lat, latf); (:lon, lonf)
+    from lat, lon, latf, lonf, state, x
+    where
+        sort[my_airports](i, x) and
+        ^LLA(lat, lon, _, flight_graph:coordinate[x]) and
+        ^Degree(latf, lat) and
+        ^Degree(lonf, lon)
+
+def json_airports2[i] =
+    (:lat, latf); (:lon, lonf); (:size, w)
+    from lat, lon, latf, lonf, state, x, w
+    where
+        sort[my_airports](i, x) and
+        ^LLA(lat, lon, _, flight_graph:coordinate[x]) and
+        ^Degree(latf, lat) and
+        ^Degree(lonf, lon) and
+        (
+            (M(x, _, _) and w = count[M[x]]) or
+            (not M(x, _, _) and w = 0)
+        )
+
+
+def json_airports3[i] =
+    (:lat, latf); (:lon, lonf); (:page_rank, w)
+    from lat, lon, latf, lonf, state, x, w
+    where
+        sort[my_airports](i, x) and
+        ^LLA(lat, lon, _, flight_graph:coordinate[x]) and
+        ^Degree(latf, lat) and
+        ^Degree(lonf, lon) and
+        (
+            (PR(x, _) and w = PR[x]) or
+            (not PR(x, _) and w = 0.0)
+        )
+
+def flights = i, j, w:
+    sort[my_airports](i, x) and
+    sort[my_airports](j, y) and
+    M(x, y, w) and w > 100 // 200 can be a good number here too
+    from x, y
+
+def json_flights[i] =
+    (:lat1, latf1); (:lon1, lonf1); (:lat2, latf2); (:lon2, lonf2); (:flights, w)
+    from latf1, lonf1, latf2, lonf2, x, y, w
+    where
+        sort[flights](i, x, y, w) and
+        json_airports(x, :lat, latf1) and
+        json_airports(x, :lon, lonf1) and
+        json_airports(y, :lat, latf2) and
+        json_airports(y, :lon, lonf2)
+
+def json_one_flight = json_flights[100]
+
+def my_airports(x in flight_graph:Airport) =
+    flight_graph:located_in(x, state) and
+    flight_graph:Major(x)
+    from state
+
+def Edges = x, y : exists(w : M(x, y, w) and w > 0) // can change the value of w > 0
+def Vertex(x) = Edges(x,_) or Edges(_,x)
+
+def outdegree[nodeid] = count[Edges[nodeid]]
+def mypagerank(nodeid, stepid, prvalue) =
+    Vertex(nodeid) and
+    stepid = 0 and
+    prvalue = 1.0/count[Vertex]
+
+def damping_factor = 0.85
+
+def mypagerank(nodeid, stepid, prvalue) =
+    stepid = range[1,10,1] and
+    Vertex(nodeid) and
+    prvalue = (1-damping_factor)/count[Vertex] + damping_factor*tmp_prvalue and
+    tmp_prvalue = a + sum[
+        neighbor, internal_pr :
+            (
+                Edges(neighbor, nodeid) and
+                internal_pr = mypagerank[neighbor, stepid-1]/outdegree[neighbor]
+            ) or
+            (
+                neighbor = 0 and internal_pr = 0.0
+            )
+    ] and
+    (
+        outdegree(nodeid, _) and a = 0.0 or
+        not outdegree(nodeid, _) and a = mypagerank[nodeid, stepid-1]
+    )
+    from a,tmp_prvalue
+
+def PR = ni, pi : pi = mypagerank[ni, 10] and Vertex(ni)

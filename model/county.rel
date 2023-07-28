@@ -1,0 +1,34 @@
+module flight_graph
+    doc"""
+        County
+    """
+    def County(x) =
+        lookup_county(_, _, x)
+
+    doc"""
+        County by state and name
+    """
+    def lookup_county(state in State, county in String, x in Entity) =
+        airport:state(loc, state_code) and
+        abbr(state, state_code) and
+        airport:county(loc, county) and
+        // county names are not unique so the nodes need to be created with the state.
+        ^County(state, county, x)
+        from loc, state_code
+
+    def lookup_county(state in String, county in String, x in Entity) =
+        lookup_county(flight_graph:lookup_state[state], county, x)
+
+    doc"""
+        County is located in State.
+    """
+    def located_in(county in County, state in State) =
+        lookup_county(state, _, county)
+
+    doc"""
+        County name. Not unique.
+    """
+    def name(county in County, s in String) =
+        lookup_county(_, s, county)
+
+end

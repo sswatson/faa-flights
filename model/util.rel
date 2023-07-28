@@ -1,0 +1,4 @@
+@inline
+def ratio[R, S] {
+    count[intersect[R, S]] / count[S]
+}

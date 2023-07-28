@@ -1,0 +1,44 @@
+def exclude_node = :Major; :Heliport
+
+module schema
+    def node(x) = flight_graph(x, _) and not exclude_node(x)
+    def edge(e, v1, v2) =
+        flight_graph(e, x, y) and
+        flight_graph(v1, x) and
+        flight_graph(v2, y) and
+        Entity(x) and
+        Entity(y) and
+        not exclude_node(v2) and
+        not exclude_node(v1)
+        from x, y
+end
+
+@inline def stringify[G][:node] = string[x] from x where G:node(x)
+@inline def stringify[G][:edge] = string[x], string[y] from x, y where G:edge(_, x, y)
+@inline def stringify[G][:edge_attribute] = string[x], string[y], "label", string[e] from x, y, e where G:edge(e, x, y)
+
+def output = graphviz[stringify[schema]]
+
+
+
+def exclude_node = :Major; :Heliport
+
+module schema
+    def node(x) = flight_graph(x, _) and not exclude_node(x)
+    def edge(e, v1, v2) =
+        flight_graph(e, x, y) and
+        flight_graph(v1, x) and
+        flight_graph(v2, y) and
+        Entity(x) and Entity(y) and
+        not exclude_node(v2) and not exclude_node(v1)
+        from x, y
+end
+
+@inline def stringify[G][:node] = string[x] from x where G:node(x)
+@inline def stringify[G][:edge] = string[x], string[y] from x, y where G:edge(_, x, y)
+@inline def stringify[G][:edge_attribute] = string[x], string[y], "label", string[e] from x, y, e where G:edge(e, x, y)
+
+def sg = stringify[schema]
+def sg:edge_attribute["Flight", "Airport", "label"] = " destination, origin"
+
+def output = graphviz[stringify[schema]]

@@ -1,0 +1,34 @@
+module flight_graph
+    def located_in(x, y) {
+        located_in(x, z) and located_in(z, y)
+        from z
+    }
+end
+
+/*
+output visualization
+
+def carrier_output =
+    table[ (:name, c, carrier:name[c]);
+           (:cancel_ratio, c, carrier_cancel_ratio[c] * 100);
+           (:avg_delay, c, carrier_average_delay[c])
+           from c in Carrier]
+
+def dest_output =
+    table[ (:name, x, airport:full_name[x]);
+           (:cancel_ratio, x, dest_cancel_ratio[x] * 100);
+           (:avg_delay, x, dest_average_delay[x])
+           from x in Airport where count[x.arriving_flight] > 1000]
+*/
+
+/*
+    @inline
+    def ratio[R, S] = count[intersect[R, S]] / count[S]
+
+def dest_cancel_ratio[dest] = ratio[cancelled_flight, dest.arriving_flight]
+def dest_average_delay[dest] = average[arrival_delay[f] for f in dest.arriving_flight]
+
+def carrier_cancel_ratio[c] = ratio[cancelled_flight, c.carrier_flight]
+def carrier_average_delay[c] =
+    average[arrival_delay[f] for f where c.carrier_flight(f) and actual_flight(f)]
+*/

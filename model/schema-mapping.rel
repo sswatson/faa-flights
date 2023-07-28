@@ -1,0 +1,206 @@
+/**
+ * Generic
+ */
+@inline
+module dataset_info
+    module int_column[c]
+        def column_name = c
+        def convert = c, parse_int
+    end
+
+    module float_column[c]
+        def column_name = c
+        def convert = c, parse_float
+    end
+
+    module bool_column[c]
+        def column_name = c
+        def convert = c, "Y"
+        // If not "Y", will be false by default
+   end
+
+    module three_valued_bool_column[c]
+        def column_name = c
+        def convert = c, "Y", boolean_true
+        def convert = c, "N", boolean_false
+    end
+
+    module datetime_column[c]
+        def column_name = c
+        def convert = c, (v: parse_datetime[v, "YYYY-mm-dd HH:MM:SS Z"])
+    end
+
+    module date_column[c]
+        def column_name = c
+        def convert = c, (v: parse_date[v, "Y-m-d"])
+    end
+
+    module year_column[c]
+        def column_name = c
+        def convert = c, (v: Year[date_year[parse_date[v, "Y"]]])
+    end
+
+    module month_year_column[c]
+        def column_name = c
+        def convert = c, parse_month_year
+    end
+
+    module int_feet_column[c]
+        def column_name = c
+        def convert = c, parse_int_feet
+    end
+
+    module float_degree_column[c]
+        def column_name = c
+        def convert = c, parse_float_degree
+    end
+
+    module table_info[R]
+        def primary_key = R:primary_key
+        def column_name = R:column_name
+        def entity_name = R:entity_name
+        def convert[c, v] = v, not(R:column_name(c))
+        def convert[c, v] = R:convert[c, v]
+        def rename[c] = c, not(exists R:rename[c])
+        def rename(c1, c2) = R:rename(c1, c2)
+    end
+
+    module rename_column[c1, c2]
+        def rename = (c1, c2)
+    end
+
+    module primary_key[name, c]
+        def entity_name = name
+        def primary_key = c
+    end
+end
+
+/**
+ * Flight DataSet info
+ */
+@inline
+module flight_dataset_info
+    with dataset_info use
+        int_column, float_column, three_valued_bool_column,
+        datetime_column, date_column, table_info, rename_column,
+        primary_key, bool_column, year_column, month_year_column,
+        int_feet_column, float_degree_column
+
+    def carrier = table_info[
+        primary_key[:Carrier, :code]
+    ]
+
+    def aircraft = table_info[
+        primary_key[:Aircraft, :tail_num];
+        int_column:aircraft_type_id;
+        int_column:aircraft_engine_type_id;
+        int_column:registrant_type_id;
+        int_column:aircraft_engine_code;
+        int_column:mode_s_code;
+        date_column:last_action_date;
+        date_column:cert_issue_date;
+        date_column:air_worth_date;
+        year_column:year_built;
+        bool_column:fract_owner
+    ]
+
+    def aircraft_model = table_info[
+        primary_key[:AircraftModel, :aircraft_model_code];
+        int_column:aircraft_type_id;
+        int_column:aircraft_engine_type_id;
+        int_column:aircraft_category_id;
+        int_column:amateur;
+        int_column:engines;
+        int_column:seats;
+        int_column:weight;
+        int_column:speed
+    ]
+
+    def airport = table_info[
+        primary_key[:Airport, :id];
+        int_column:id;
+        int_column:cbd_dist;
+        bool_column:cntl_twr;
+        bool_column:major;
+        float_degree_column:longitude;
+        float_degree_column:latitude;
+        int_feet_column:elevation;
+        month_year_column:act_date;
+        three_valued_bool_column:cust_intl;
+        three_valued_bool_column:c_ldg_rts;
+        three_valued_bool_column:joint_use;
+        three_valued_bool_column:mil_rts
+    ]
+
+    def flight = table_info[
+        primary_key[:Flight, :id2];
+        int_column:flight_time;
+        int_column:dep_delay;
+        int_column:arr_delay;
+        int_column:taxi_out;
+        int_column:taxi_in;
+        int_column:distance;
+        int_column:id2;
+        datetime_column:dep_time;
+        datetime_column:arr_time;
+        bool_column:cancelled;
+        bool_column:diverted;
+        rename_column[:destination, :destination_code];
+        rename_column[:arr_time, :arrival_time];
+        rename_column[:id2, :id]
+    ]
+
+end
+
+/* TODO performance issues
+
+@inline
+def flight_dataset_mapping[Data] =
+    flight_file_mapping[Data[file], flight_dataset_info[file]]
+    from file
+*/
+
+@inline
+def flight_file_mapping[CSV, Schema](col_renamed, k, v...) =
+    CSV(key_col, pos, key_str) and
+    CSV(col, pos, val_str) and
+    Schema:primary_key(key_col) and
+    Schema:entity_name(entity_name) and
+    Schema:rename(col, col_renamed) and
+    Schema:convert(col, val_str, v...) and
+    create_entity(entity_name, key_str, k)
+    from key_col, key_str, val_str, col, pos, entity_name
+
+/*
+@inline
+def flight_file_mapping[CSV, Schema](entity_name, k) =
+    CSV(key_col, pos, key_str) and
+    Schema:primary_key(key_col) and
+    Schema:entity_name(entity_name) and
+    create_node(entity_name, key_str, k)
+    from key_col, key_str, pos
+*/
+
+/** Workaround for performance problem in type inference? */
+
+def airport =
+    flight_file_mapping[airport_data, flight_dataset_info:airport]
+
+def carrier =
+    flight_file_mapping[carrier_data, flight_dataset_info:carrier]
+
+def aircraft_model =
+    flight_file_mapping[aircraft_model_data, flight_dataset_info:aircraft_model]
+
+def aircraft =
+    flight_file_mapping[aircraft_data, flight_dataset_info:aircraft]
+
+def flight =
+    flight_file_mapping[flight_data_partpos, flight_dataset_info:flight]
+
+def flight_data_partpos[col] =
+    ^PartPos[part, pos], flight_data[part, col, pos] from part, pos
+
+// If we do not standardize on either 1 or 2 arguments for every row of data, we need to
+// duplicate the mapping code above.
+value type PartPos = Int, FilePos
