@@ -2,3 +2,16 @@
 def ratio[R, S] {
     count[intersect[R, S]] / count[S]
 }
+
+doc"""
+If `R` represents a table in stacked form, select the triples from the top `n` rows of that table and display
+the resulting relation as a wide table.
+"""
+@inline
+def top_table[n, R] {
+    table[{
+        a, b, c :
+        R(a, b, c)
+        and top[n, {mid : R(_, mid, _)}](_, b)
+    }]
+}

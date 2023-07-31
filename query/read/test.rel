@@ -1,5 +1,0 @@
-def output = 1 + 1
-
-def output = arity[flight_graph:located_in]
-
-def output = flight_graph:located_in . flight_graph:located_in

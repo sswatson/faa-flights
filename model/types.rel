@@ -63,11 +63,6 @@ def meters_to_feet(m in Length, f in Length) =
     ^Length:Meters(x, m)
     from x
 
-/*
-def meters_to_feet(m in Length, f in Length) =
-    feet_to_meters[f, m]
-*/
-
 /************************************************************************
  * Geographical types
  */

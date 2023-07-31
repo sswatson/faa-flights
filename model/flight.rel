@@ -6,16 +6,6 @@ module flight_graph
     """
     def Flight(x) = flight_id(x, _)
 
-    /*
-    def actual_flight(f) =
-        Flight(f) and
-        not flight_cancelled(f) and
-        not flight_diverted(f)
-
-    def arr_delay(f, v) =
-        flight_arrival_offset(f, v)
-    */
-
     def destination(f in Flight, a in Airport) =
         flight_destination_code(f, code) and
         airport_code(a, code)

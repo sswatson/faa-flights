@@ -1,12 +1,12 @@
 module flight_graph
 
     doc"""
-￼        Carrier
-￼    """
+        Carrier
+    """
     def Carrier(x) =
         carrier:code(x, _)
 
-   def carrier_code = carrier:code
-   def carrier_name = carrier:name
-   def carrier_nickname = carrier:nickname
+    def carrier_code = carrier:code
+    def carrier_name = carrier:name
+    def carrier_nickname = carrier:nickname
 end
