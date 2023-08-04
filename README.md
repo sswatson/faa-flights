@@ -10,7 +10,7 @@ manipulations of the data.
 
 1. Acquire your OAuth Client ID and Secret from your account manager.
 2. Put your credentials in a file called `config` inside a folder called `.rai` inside your home directory on your computer:
-    ```toml
+    ```ini
     [default]
     host = azure.relationalai.com
     client_id = <your client_id>
@@ -47,3 +47,7 @@ The flight data is public, located in several places:
 
 This project is inspired by the [documentation from
 Malloy.](https://looker-open-source.github.io/malloy/documentation/index.html)
+
+## Guide
+
+Check out the files in the `guide` directory for a guided tour of the code in this repo.

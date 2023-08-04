@@ -1,3 +1,5 @@
 model-directory = "model"
-update-directory = "query/write"
-query-directory = "query/read"
+write-query-files = ["base-data/*"]
+read-query-files = ["query/*"]
+cache-output = true
+database-filter-regex = "faa-flights"

@@ -1,4 +1,9 @@
-# FAA Flight Data
+
+# Introduction
+
+The files in this directory will guide you through the project. Complete the setup steps in `README.md` before beginning.
+
+If you open your RelationalAI view using the RelationalAI icon in the left sidebar, you should see your select database in the Databases section. You can open that tree item to see a list of base relations, derived relations, and models. We'll look at the base relations first and then the models.
 
 ## Base Relations
 
