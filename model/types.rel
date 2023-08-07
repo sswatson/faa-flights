@@ -1,15 +1,15 @@
 /*
  * Entities
  */
-entity type City = Entity, String
-entity type County = Entity, String
-entity type State = String
+entity type City = Entity, String // county, name
+entity type County = Entity, String // state, name
+entity type State = String // name
 
-entity type Carrier = String
-entity type Aircraft = String
-entity type AircraftModel = String
-entity type Airport = String
-entity type Flight = String
+entity type Carrier = String // ID
+entity type Aircraft = String // ID
+entity type AircraftModel = String // ID
+entity type Airport = String // ID
+entity type Flight = String // ID
 
 module create_entity
     def Carrier[x] = ^Carrier[x]
