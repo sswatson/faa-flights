@@ -1,9 +1,9 @@
 /*
  * Entities
  */
-entity type City = Entity, String // county, name
-entity type County = Entity, String // state, name
 entity type State = String // name
+entity type County = Entity, String // state, name
+entity type City = Entity, String // county, name
 
 entity type Carrier = String // ID
 entity type Aircraft = String // ID
@@ -19,7 +19,6 @@ module create_entity
     def Flight[x] = ^Flight[x]
     def State[x] = ^State[x]
 end
-
 
 /*
  * Value types

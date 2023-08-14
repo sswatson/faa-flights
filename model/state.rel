@@ -20,5 +20,4 @@ module flight_graph
     def lookup_state(s in String, x in State) =
         flight_graph:postal_abbrevation(x, s)
 
-    //    ic { function(lookup_state) }
 end

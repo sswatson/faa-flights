@@ -17,7 +17,7 @@ module dataset_info
         def column_name = c
         def convert = c, "Y"
         // If not "Y", will be false by default
-   end
+    end
 
     module three_valued_bool_column[c]
         def column_name = c
@@ -152,14 +152,6 @@ module flight_dataset_info
 
 end
 
-/* TODO performance issues
-
-@inline
-def flight_dataset_mapping[Data] =
-    flight_file_mapping[Data[file], flight_dataset_info[file]]
-    from file
-*/
-
 @inline
 def flight_file_mapping[CSV, Schema](col_renamed, k, v...) =
     CSV(key_col, pos, key_str) and
@@ -170,18 +162,6 @@ def flight_file_mapping[CSV, Schema](col_renamed, k, v...) =
     Schema:convert(col, val_str, v...) and
     create_entity(entity_name, key_str, k)
     from key_col, key_str, val_str, col, pos, entity_name
-
-/*
-@inline
-def flight_file_mapping[CSV, Schema](entity_name, k) =
-    CSV(key_col, pos, key_str) and
-    Schema:primary_key(key_col) and
-    Schema:entity_name(entity_name) and
-    create_node(entity_name, key_str, k)
-    from key_col, key_str, pos
-*/
-
-/** Workaround for performance problem in type inference? */
 
 def airport =
     flight_file_mapping[airport_data, flight_dataset_info:airport]
