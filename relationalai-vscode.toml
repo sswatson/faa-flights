@@ -1,4 +1,4 @@
 model-directory = "model"
-write-query-files = ["base-data/**/*"]
+write-query-files = ["data/**/*"]
 read-query-files = ["query/**/*"]
 database-filter-regex = "faa-flights"
