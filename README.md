@@ -20,19 +20,11 @@ manipulations of the data.
 5. Click the four-squares icon in the left sidebar to open the Extension Marketplace. Search for "RelationalAI" and click **Install**.
 6. Use the RelationalAI icon in the left sidebar to open the RelationalAI panel. Create and select a database and an engine.
 7. Load the data:
-    - Open `query/write/load-sample-data.rel`, select the whole contents of the file (command-A) and do `shift+enter` to run.
-    - Select `RelationalAI: Load CSV` from the command palette (command-shift-P) and enter the name `states_data`. Select the file `data/states.csv`.
-    - Select `RelationalAI: Load JSON` from the commmand pallete and enter the name `us_states_geojson`. Select the file `data/us-states.json`.
-8. Run example queries in `query/read` by selecting them one at a time and doing `shift+enter`. Outputs will appear in a panel on the right.
+    - Open `data/load/load-simple-data.rel`, select the whole contents of the file (command-A) and do `shift+enter` to run.
+    - Select `RelationalAI: Load CSV` from the command palette (command-shift-P) and enter the name `states_data`. Select the file `data/asset/states.csv`.
+    - Select `RelationalAI: Load JSON` from the commmand pallete and enter the name `us_states_geojson`. Select the file `data/asset/us-states.json`.
+8. Run example queries in `query` by selecting them one at a time and doing `shift+enter`. Outputs will appear in the RAI Output Viewer on the right.
 
-## Files
-
-- Loading data:
-  - `rel/load-data.rel`: Queries to install complete dataset
-  - `rel/load-sample-data.rel`: Queries to install sample dataset
-- Model source code: `rel/faa-flight/`
-- Example queries for using and exploring the data/model: `rel/queries`
-  - `rel/queries/rel-by-example` contains example queries based on [Malloy by Example](https://looker-open-source.github.io/malloy/documentation/index).
 
 ## Data Sources
 
