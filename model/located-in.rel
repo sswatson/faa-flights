@@ -1,0 +1,9 @@
+module flight_graph
+    // ensure that the relation `located_in`
+    // is transtive
+    def located_in(x, y) {
+        located_in(x, z) and located_in(z, y)
+        from z
+    }
+end
+

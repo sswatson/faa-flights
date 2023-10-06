@@ -1,4 +1,7 @@
 model-directory = "model"
 write-query-files = ["data/**/*"]
 read-query-files = ["query/**/*"]
-database-filter-regex = "faa-flights"
+database = "faa-flights"
+database-filter = "faa-flights"
+sort-databases-and-engines-by = "name"
+auto-sync-models = true

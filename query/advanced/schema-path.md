@@ -1,3 +1,4 @@
+```rel
 def labelled_edge =
     "craft", "Flight", "Aircraft"; "destination", "Flight", "Airport"; "located_in", "Airport", "City"; "located_in", "Airport", "County";
     "located_in", "Airport", "State"; "located_in", "City", "County"; "located_in", "City", "State"; "located_in", "County", "State";
@@ -34,3 +35,4 @@ def my_graph:candidate[x, y] = nil[y], edge(x, y)
 def my_graph:candidate[x, y] = edge[x] . shortest_path[y]
 
 def output[x, y] = length[shortest_path[x, y]], show[shortest_path[x, y]], sg:label(x, "Flight"), sg:label(y, "State")
+```

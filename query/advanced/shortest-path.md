@@ -1,3 +1,4 @@
+```rel
 @inline def cnil[x] = last[hash[(:nil, x)]]
 @inline def ccons[x, p] = last[hash[(:cons, x, p)]]
 
@@ -15,8 +16,6 @@ def my_graph:show[x in node] = string[x]
 def my_graph:show[p] = show[x], nil(x, p) from x
 def my_graph:show[p] = concat[concat[show[element[p]], " -> "], show[tail[p]]]
 
--------------
-
 def my_graph = (:nil, x, cnil[x]) from x in node
 def my_graph =
     (:shortest_path, x, y, ccons[x, p2]);
@@ -28,6 +27,5 @@ def my_graph =
 def my_graph:candidate[x, y] = nil[y], edge(x, y)
 def my_graph:candidate[x, y] = edge[x] . shortest_path[y]
 
---------------------------
-
 def output[x, y] = length[shortest_path[x, y]], show[shortest_path[x, y]]
+```

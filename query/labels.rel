@@ -1,4 +1,0 @@
-// This query returns all the names of all unary relations that exist in the graph (knows as
-// labels in labelled property graphs).
-
-col: flight_graph(col, _)

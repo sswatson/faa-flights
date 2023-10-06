@@ -1,13 +1,17 @@
 module flight_graph
 
     doc"""
-        Airport
+        Airport(x)
+    
+    Type check for the `Airport` entity.
     """
     def Airport(x in Entity) =
         airport:id(x, _)
 
     doc"""
-        City where airport is located.
+        located_in(x in Airport, city in City)
+    
+    The airport `x` is located in `city`.
     """
     def located_in(x in Airport, city in City) =
         state = lookup_state[airport:state[x]] and
@@ -15,43 +19,165 @@ module flight_graph
         city = lookup_city[county, airport:city[x]]
         from state, county
 
+    doc"""
+        Heliport(x in Airport)
+    
+    Indicates whether airport `x` is a Heliport.
+    """
     def Heliport(x) =
         airport:fac_type[x] = "HELIPORT"
 
+    doc"""
+        Major(x in Airport)
+    
+    Indicates whether airport `x` is major.
+    """
     def Major(x) =
         airport:major(x)
 
     doc"""
-        Indicates whether airport has a control tower
+        Control_tower(x in Airport)
+    
+    Indicates whether airport `x` has a control tower.
     """
     def Control_tower(x) =
         airport:ctrl_twr(x)
 
+    doc"""
+        coordinate(x in Airport, coord in LLA)
+    
+    The airport `x` is located at coordinates `coord`.
+    """
     def coordinate[x] = ^LLA[
         airport_latitude[x],
         airport_longitude[x],
         airport_elevation[x]
     ]
 
+    doc"""
+        airport_code(x in Airport, code in String)
+    
+    The airport `x` has code `code`.
+    """
     def airport_code = airport:code
+
+    doc"""
+        airport_name(x in Airport, name in String)
+    
+    The airport `x` has name `name`.
+    """
     def airport_name = airport:full_name
+
+    doc"""
+        airport_region(x in Airport, region in String)
+    
+    The airport `x` is in FAA region `region`.
+    """
     def airport_region = airport:faa_region
+
+    doc"""
+        facility_type(x in Airport, type in String)
+    
+    The airport `x` has facility type `type`.
+    """
     def facility_type = airport:fac_type
+
+    doc"""
+        airport_elevation(x in Airport, elevation in Int)
+    
+    The airport `x` has an elevation of `elevation`.
+    """
     def airport_elevation = airport:elevation
+
+    doc"""
+        airport_latitude(x in Airport, latitude in Float)
+    
+    The airport `x` has latitude `latitude`.
+    """
     def airport_latitude = airport:latitude
+
+    doc"""
+        airport_longitude(x in Airport, longitude in Float)
+    
+    The airport `x` has longitude `longitude`.
+    """
     def airport_longitude = airport:longitude
-    def airport_use = airport:fac_use // guess: public vs private?
-    def for_joint_use = airport:joint_use // boolean
-    def airport_distance_from_cbd = airport:cbd_dist // guess: CBD = central business district
-    def airport_direction_to_cdb = airport:cdb_dir // compass direction
+
+    doc"""
+        airport_use(x in Airport, use in String)
+    
+    The airport `x` has use type `use`.
+    """
+    def airport_use = airport:fac_use
+
+    doc"""
+        for_joint_use(x in Airport)
+    
+    The airport `x` is for joint use.
+    """
+    def for_joint_use = airport:joint_use
+
+    doc"""
+        airport_distance_from_cbd(x in Airport, distance in Int)
+    
+    The airport `x` is `distance` miles away from the central business district (CBD).
+    """
+    def airport_distance_from_cbd = airport:cbd_dist
+
+    def Direction = {
+        "N"; "S"; "E"; "W"; "NE"; "SE"; "NW"; "SW"
+    }
+
+    doc"""
+        airport_direction_to_cbd(x in Airport, direction in Direction)
+    
+    The direction from airport `x` to the central business district (CBD) is `direction`.
+    """
+    def airport_direction_to_cbd = airport:cbd_dir
+
+    doc"""
+        airport_site_number(x in Airport, number in String)
+    
+    The airport `x` has site number `number`.
+
+    Note: site numbers are strings rather than numbers because they look like this: "02592.6*A"
+    """
     def airport_site_number = airport:site_number
+
+    doc"""
+        airport_aeronautical_chart(x in Airport, chart in String)
+    
+    The airport `x` has aeronautical chart `chart`.
+
+    The values for `chart` in tihs dataset are city names like `"CHICAGO"` or `"DENVER"`.
+    """
     def airport_aeronautical_chart = airport:aero_cht
+
+    doc"""
+        airport_active_date(x in Airport, date in Date)
+    
+    The airport `x` became active on `date`.
+    """
     def airport_active_date = airport:act_date
-    def airport_faa_district = airport:faa_dist // lots of "NONE" values
+
+    doc"""
+        airport_faa_district(x in Airport, district in String)
+    
+    The airport `x` is in FAA district `district`.
+    """
+    def airport_faa_district = airport:faa_dist
+
+    doc"""
+        federal_agreement(x in Airport, agreement in String)
+    
+    Specifies the federal agreement status of airport `x`.
+    """
     def federal_agreement = airport:fed_agree
 
     doc"""
-        Airport certification and date certified
+        airport_certification(x in Airport, cert in String)
+    
+    The airport `x` has certification `cert`.
     """
     def airport_certification = airport:cert
 

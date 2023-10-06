@@ -1,29 +1,11 @@
-/* Line Charts (not associated with any graph from Malloy examples) */
-with flight_graph use Flight, flight_departure_time
 
-module count_by_month
-    def data:count[month] =
-        count[y, x:
-            Flight(x) and
-            flight_departure_time(x, y) and
-            datetime_month_UTC(y, month)
-        ]
+# Common Patterns
 
-    def data:month(x, y) =
-        x = range[1, 12, 1] and
-        y = x
+## A Line Plot
 
-    def color = {(:year); (:title, "Year")}
-end
+Show a line plot of monthly flight counts over the course of each year in the dataset:
 
-def count_by_month_chart = vegalite:line[:month, :count, count_by_month]
-
-def output = vegalite:plot[count_by_month_chart]
-
-
-/* Year Over Year Analysis */
-
-// Method 1: Pivoting a Visualization
+```rel
 value type MonthYear = String, Int
 
 module flight_chart
@@ -53,10 +35,12 @@ end
 
 def graph = vegalite:line[:month, :count, flight_chart]
 def output = vegalite:plot[graph]
+```
 
+Count flights in 2002 and 2003 and compute the percentage change from 2002 to 2003, facted by carrier:
 
-// Method 2: Filtered Aggregates
-with flight_graph use Flight
+```rel
+with flight_graph use Flight, flight_departure_time, flight_carrier_code
 
 def flights_per_year[year, carrier] =
     count[datetime, x:
@@ -81,11 +65,14 @@ module compare_years
         (if yr2003[carrier] = 0 then 1 else yr2003[carrier] end)
 end
 
-//def output = table[compare_years]
+def output = table[compare_years]
+```
 
+## Aggregate Statistics by Carrier
 
-/* Foreign Sums and Averages */
+Compute several aggregate statistics, faceted by carrier:
 
+```rel
 with flight_graph use Flight, craft, model, flight_carrier_code,
     flight_departure_time, num_seats
 
@@ -142,10 +129,14 @@ module stats_by_carrier
         ]
 end
 
-//def output = table[stats_by_carrier]
+def output = table[stats_by_carrier]
+```
 
+## Percent of Total
 
-/* Percent of Total */
+Create a table showing the percentage of the total number of flights that each carrier is responsible for:
+
+```rel
 with flight_graph use Flight, carrier_nickname, operated_by
 
 def total_flight_count = count[Flight]
@@ -162,14 +153,15 @@ module flight_count_stats
         count_by_carrier[c] / total_flight_count * 100
 end
 
-//def output = table[flight_count_stats]
+def output = table[flight_count_stats]
+```
 
 
-/* Pivot Limits */
+## Carriers by destination
 
-// Carriers by destination
-with flight_graph use operated_by, flight_destination_code,
-    carrier_name
+```rel
+with flight_graph use operated_by, 
+    flight_destination_code, carrier_name
 
 def count_by_carrier_and_dest[carrier, dest] =
     count[f:
@@ -177,10 +169,27 @@ def count_by_carrier_and_dest[carrier, dest] =
         carrier = carrier_name[operated_by[f]]
     ]
 
-//def output = count_by_carrier_and_dest
+def output = count_by_carrier_and_dest
+```
 
+# Finding all unary relations
 
-// Query for the top 5 carriers
+The cardinality of all unary relations in the graph:
+
+```rel
+def output[n] = count[v: flight_graph(n, v)]
+```
+
+```rel
+def output(col) = flight_graph(col, _)
+```
+
+## Top Five Carriers
+
+```rel
+with flight_graph use operated_by, 
+    flight_destination_code, carrier_name
+
 def count_by_carrier =
     count[f:
         carrier = carrier_name[operated_by[f]]
@@ -189,10 +198,12 @@ def count_by_carrier =
 def top_5_carriers(ord, carrier, count) =
     bottom[5, count_by_carrier](ord, count, carrier)
 
-//def output = top_5_carriers
+def output = top_5_carriers
+```
 
-
-// Top 5 destinations
+```rel
+with flight_graph use operated_by, 
+    flight_destination_code, carrier_name
 def count_by_destination =
     count[f:
         dest = flight_destination_code[f]
@@ -201,4 +212,5 @@ def count_by_destination =
 def top_5_destinations(ord, dest, count) =
     bottom[5, count_by_destination](ord, count, dest)
 
-//def output = top_5_destinations
+def output = top_5_destinations
+```

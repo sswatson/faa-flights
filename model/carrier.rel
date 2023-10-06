@@ -1,12 +1,36 @@
 module flight_graph
 
     doc"""
-        Carrier
+        Carrier(x in Entity)
+    
+    Type check relation for the `Carrier` entity.
     """
     def Carrier(x) =
         carrier:code(x, _)
 
+    doc"""
+        carrier_code(x in Carrier, code in String)
+    
+    The carrier `x` has a two-letter caerrier code `code`.
+    """
     def carrier_code = carrier:code
+
+    doc"""
+        carrier_name(x in Carrier, name in String)
+    
+    The carrier `x` has name `name`.
+
+    The values of `name` are things like `"Jetblue Airways".
+    """
     def carrier_name = carrier:name
+
+    doc"""
+        carrier_nickname(x in Carrier, nickname in String)
+    
+    The carrier `x` has nickname `nickname`.
+
+    The values of `nickname` are things like `"Jetblue"`.
+    """
     def carrier_nickname = carrier:nickname
+
 end

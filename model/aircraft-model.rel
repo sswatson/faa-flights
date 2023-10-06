@@ -1,14 +1,72 @@
+doc"""
+The flight-data knowledge graph
+"""
 module flight_graph
+    doc"""
+        AircraftModel(x in Entity)
 
+    The type check relation for the `AircraftModel` entity.
+    """
     def AircraftModel(x) =
         aircraft_model:aircraft_model_code(x, _)
 
+    doc"""
+        model_name(x in AircraftModel, name in String)
+
+    The name of the aircraft model `x` is `name`.
+    """
     def model_name = aircraft_model:model
+
+    doc"""
+        num_seats(x in AircraftModel, n in Int)
+
+    The number of seats of the aircraft model `x` is `n`.
+    """
     def num_seats = aircraft_model:seats
+
+    doc"""
+        engine_type_id(x in AircraftModel, id in String)
+
+    The engine type of the aircraft model `x` is `id`.
+    """
     def engine_type_id = aircraft_model:aircraft_engine_type_id
+
+    doc"""
+        aircraft_type_id(x in AircraftMode, model in Int)
+
+    The aircraft type of the aircraft model `x` is `model`.
+    """
     def aircraft_type_id = aircraft_model:aircraft_type_id
+
+    doc"""
+        manufacturer(x in AircraftModel, name in String)
+
+    The name of the manufacturer of the aircraft model `x` is `y`.
+    """
     def manufacturer = aircraft_model:manufacturer
-    def model_speed = aircraft_model:speed // units unknown
+
+    doc"""
+        speed(x in AircraftModel, s in Knot)
+    
+    The speed of the aircraft model `x` is `s` (units unknown).
+
+    A value of 0 indicates an unknown speed.
+    """
+    def model_speed = aircraft_model:speed
+
+    doc"""
+        model_category_id(x in AircraftModel, id in Int)
+
+    The category of the aircraft model `x` is `id`.
+    """
     def model_category_id = aircraft_model:aircraft_category_id
-    def num_engines = aircraft_model:engines // some 0
+
+    doc"""
+        engines(x in AircraftModel, n in Int)
+
+    The number of engines of the aircraft model `x` is `n`.
+
+    A value of 0 indicates an unknown number of engines.
+    """
+    def num_engines = aircraft_model:engines
 end

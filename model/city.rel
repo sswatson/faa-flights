@@ -1,12 +1,22 @@
 module flight_graph
+
     doc"""
-        City
+        City(x in Entity)
+    
+    Type check relation for the `City` entity.
     """
     def City(x) =
         lookup_city(_, _, x)
 
     doc"""
-        City
+        lookup_city(
+            county in County,
+            city_name in String,
+            x in City
+        )
+    
+    Determines whether the entity `x` represents the city with name `city_name` located in `county`. 
+    Note: City names are not unique, so they are identified relative to the county.
     """
     def lookup_city(county in County, city_name in String, x in Entity) =
         airport:city(loc, city_name) and
@@ -14,20 +24,23 @@ module flight_graph
         airport:state(loc, state_code) and
         abbr(state, state_code) and
         name(county, county_name) and
-        // city names are not unique, so they need to be created relative to the county.
-        // TODO are cities unique in counties??
         ^City(county, city_name, x)
         from loc, state, state_code, county_name
 
     doc"""
-        City name. Not unique.
+        name(city in City, s in String)
+    
+    Relates the entity `city` to its name `s`. Note that city names are not unique.
     """
     def name(city in City, s in String) =
         lookup_city(_, s, city)
 
     doc"""
-        City is located in County
+        located_in(city in City, county in County)
+    
+    Specifies that the `city` is located in `county`.
     """
     def located_in(city in City, county in County) =
         lookup_city(county, _, city)
+
 end

@@ -1,3 +1,7 @@
+# Generic Shortest Path
+
+```rel
+
 entity type Path:nil
 entity type Path:cons = Char, Entity
 
@@ -36,34 +40,10 @@ module my_graph
     def node = 'a'; 'b'; 'c'; 'd'
     def edge = ('a', 'b'); ('b', 'c'); ('a', 'c'); ('c', 'd'); ('d', 'a')
     def shortest_distance[x, y] = length[shortest_path[x, y]]
-    // def show[x in node] = string[x]
 end
 
-// inject shortest path into the graph
+ // inject shortest path into the graph
 def my_graph = shortest_path
 
 def output = my_graph
-
-
-
-
-/*
-module my_graph
-    def shortest_distance[x, y] = length[shortest_path[x, y]]
-    def show[x in node] = string[x]
-end
-
-def my_graph = shortest_path:result
-
-module shortest_path  // [Graph]
-    with Graph use node
-
-    def shortest_path[x, y] = ^Path[x, p2], shortest_path(x, y, p2)
-
-    def _intermediate(x, y, p2) =
-        argmin[length[p] for p where candidate(x, y, p)](p2)
-
-end
-
-def output[x, y] = length[shortest_path[x, y]], show[shortest_path[x, y]]
-*/
+```

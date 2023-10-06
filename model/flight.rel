@@ -1,50 +1,177 @@
 module flight_graph
-    with flight_graph use Carrier, Airport
 
     doc"""
-        Flight
+        Flight(x in Entity)
+    
+    Type check relation to determine if `x` is a `Flight`.
     """
     def Flight(x) = flight_id(x, _)
 
+    doc"""
+        destination(f in Flight, a in Airport)
+    
+    Specifies that the flight `f` has its destination as airport `a`.
+    """
     def destination(f in Flight, a in Airport) =
         flight_destination_code(f, code) and
         airport_code(a, code)
         from code
 
+    doc"""
+        origin(f in Flight, a in Airport)
+    
+    Specifies that the flight `f` originates from airport `a`.
+    """
     def origin(f in Flight, a in Airport) =
         flight_origin(f, code) and
         airport_code(a, code)
         from code
 
+    doc"""
+        operated_by(f in Flight, c in Carrier)
+    
+    Specifies that the flight `f` is operated by carrier `c`.
+    """
     def operated_by(f in Flight, c in Carrier) =
         flight_carrier_code(f, s) and
         carrier_code(c, s)
         from s
 
+    doc"""
+        operates(c in Carrier, f in Flight)
+    
+    Specifies that the carrier `c` operates flight `f`.
+    """
     def operates(c in Carrier, f in Flight) =
         operated_by(f, c)
 
+    doc"""
+        craft(f in Flight, a in Aircraft)
+    
+    Specifies that the flight `f` uses the aircraft `a`.
+    """
     def craft(f in Flight, a in Aircraft) =
         flight_tail_num(f, code) and
         aircraft:tail_num(a, code)
         from code
 
+    doc"""
+        arrival_delay(f in Flight, delay in Int)
+    
+    Specifies the arrival delay of flight `f` as `delay`.
+    """
     def arrival_delay[f] = maximum[0, flight_arrival_offset[f]]
 
+    doc"""
+        flight_cancelled(f in Flight)
+    
+    The flight `f` was cancelled.
+    """
     def flight_cancelled = flight:cancelled
+
+    doc"""
+        flight_diverted(f in Flight, status in Boolean)
+    
+    Indicates if the flight `f` was diverted.
+    """
     def flight_diverted = flight:diverted
+
+    doc"""
+        flight_arrival_offset(f in Flight, offset in Int)
+    
+    Specifies the arrival offset time for flight `f`.
+    """
     def flight_arrival_offset = flight:arr_delay
+
+    doc"""
+        flight_departure_offset(f in Flight, offset in Int)
+    
+    Specifies the departure offset time for flight `f`.
+    """
     def flight_departure_offset = flight:dep_delay
+
+    doc"""
+        flight_destination_code(f in Flight, code in String)
+    
+    Specifies the destination code of flight `f`.
+    """
     def flight_destination_code = flight:destination_code
+
+    doc"""
+        flight_dep_taxi_time(f in Flight, time in Int)
+    
+    Specifies the taxi-out time for flight `f`.
+    """
     def flight_dep_taxi_time = flight:taxi_out
+
+    doc"""
+        flight_arr_taxi_time(f in Flight, time in Int)
+    
+    Specifies the taxi-in time for flight `f`.
+    """
     def flight_arr_taxi_time = flight:taxi_in
+
+    doc"""
+        flight_origin(f in Flight, airport in Airport)
+    
+    Specifies the origin airport for flight `f`.
+    """
     def flight_origin = flight:origin
+
+    doc"""
+        flight_tail_num(f in Flight, num in String)
+    
+    Specifies the tail number of aircraft used in flight `f`.
+    """
     def flight_tail_num = flight:tail_num
+
+    doc"""
+        flight_carrier_code(f in Flight, code in String)
+    
+    Specifies the carrier code for flight `f`.
+    """
     def flight_carrier_code = flight:carrier
+
+    doc"""
+        flight_id(f in Flight, id in Int)
+    
+    Specifies the ID for flight `f`.
+    """
     def flight_id = flight:id
+
+    doc"""
+        flight_duration(f in Flight, time in Int)
+    
+    Specifies the duration for flight `f`.
+    """
     def flight_duration = flight:flight_time
+
+    doc"""
+        flight_departure_time(f in Flight, time in DateTime)
+    
+    Specifies the departure time for flight `f`.
+    """
     def flight_departure_time = flight:dep_time
-    def flight_arrival_time = flight:arr_time
+
+    doc"""
+        flight_arrival_time(f in Flight, time in DateTime)
+    
+    Specifies the arrival time for flight `f`.
+    """
+    def flight_arrival_time = flight:arrival_time
+
+    doc"""
+        flight_number(f in Flight, number in String)
+    
+    Specifies the flight number for flight `f`.
+    """
     def flight_number = flight:flight_num
+
+    doc"""
+        flight_distance(f in Flight, distance in Int)
+    
+    The travel distance of flight `f` is `distance`.
+    """
     def flight_distance = flight:distance
+
 end

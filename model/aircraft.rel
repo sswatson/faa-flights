@@ -1,25 +1,121 @@
 module flight_graph
 
+    doc"""
+        Aircraft(x in Entity)
+    
+    Type check relation for the `Aircraft` entity.
+    """
     def Aircraft(x) =
         aircraft:tail_num(x, _)
 
+    doc"""
+        model(f in Aircraft, m in AircraftModel)
+
+    The aircraft `f` has model `m`.
+    """
     def model = aircraft_model
+
+    doc"""
+        model_name(f in AircraftModel, name in String)
+    
+    The model `f` is called `name`.
+    """
     def model_name[f] = model_name[model[f]]
+
+    doc"""
+        num_seats(f in Aircraft, n in Int)
+
+    The aircraft `f` has `n` seats.
+    """
     def num_seats[f] = num_seats[model[f]]
+
+    doc"""
+        manufacturer(f in Aircraft, mfr in String)
+
+    The aircraft `f` is manufactured by `mfr`.
+    """
     def manufacturer[f] = manufacturer[model[f]]
+
+    doc"""
+        aircraft_year_built(f in Aircraft, year in Int)
+
+    The aircraft `f` was built in `year`.
+    """
     def aircraft_year_built = aircraft:year_built
+
+    doc"""
+        aircraft_certification(f in Aircraft, cert in String)
+
+    The aircraft `f` has certification `cert`.
+    """
     def aircraft_certification = aircraft:certification
+
+    doc"""
+        aircraft_serial(f in Aircraft, serial in String)
+
+    The aircraft `f` has serial number `serial`.
+    """
     def aircraft_serial = aircraft:aircraft_serial
+
+    doc"""
+        aircraft_certification_issue_date(f in Aircraft, date in Date)
+
+    The aircraft `f` had its certification issued on `date`.
+    """
     def aircraft_certification_issue_date = aircraft:cert_issue_date
+
+    doc"""
+        Fractional_ownership(f)
+
+    The aircraft `f` is fractionally owned.
+    """
     def Fractional_ownership(x) = aircraft:fract_owner(x)
+
+    doc"""
+        aircraft_type_id(f in Aircraft, type_id in Integer)
+
+    The aircraft `f` has type ID `type_id`.
+    """
     def aircraft_type_id = aircraft:aircraft_type_id
+
+    doc"""
+        engine_type_id(f in Aircraft, engine_id in Integer)
+
+    The aircraft `f` has engine type ID `engine_id`.
+    """
     def engine_type_id = aircraft:aircraft_engine_type_id
+
+    doc"""
+        aircraft_last_action_date(f in Aircraft, date in Date)
+
+    The aircraft `f` had its last action on `date`.
+    """
     def aircraft_last_action_date = aircraft:last_action_date
+
+    doc"""
+        aircraft_air_worth_date(f in Aircraft, date in Date)
+
+    The aircraft `f` has air worthiness date `date`.
+    """
     def aircraft_air_worth_date = aircraft:air_worth_date
+
+    doc"""
+        aircraft_registrant_type_id(f in Aircraft, reg_id in Int)
+
+    The aircraft `f` has registrant type ID `reg_id`.
+    """
     def aircraft_registrant_type_id = aircraft:registrant_type_id
+
 end
 
+doc"""
+    aircraft_model(
+        f in flight_graph:Aircraft,
+        m in flight_graph:AircraftModel
+    )
 
+The aircraft `f` has model `m`.
+"""
 def aircraft_model(f, m) =
     aircraft:aircraft_model_code(f, code) and
     aircraft_model:aircraft_model_code(m, code)

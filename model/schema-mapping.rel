@@ -1,60 +1,116 @@
-/**
- * Generic
- */
+doc"""
+The subrelations of `dataset_info` can be used
+to specify column conversions.
+"""
 @inline
 module dataset_info
+    doc"""
+        int_column[c in String]
+    
+    int_column[c in String] is a relation that specifies a column name of `c` and a conversion relation of `parse_int`.
+    """
     module int_column[c]
         def column_name = c
         def convert = c, parse_int
     end
 
+    doc"""
+        float_column[c in String]
+    
+    float_column[c in String] is a relation that specifies a column name of `c` and a conversion relation of `parse_float`.
+    """
     module float_column[c]
         def column_name = c
         def convert = c, parse_float
     end
 
+    doc"""
+        bool_column[c in String]
+    
+    bool_column[c in String] is a relation that specifies a column name of `c` with "Y" indicating true.
+    If not "Y", the value will be false by default.
+    """
     module bool_column[c]
         def column_name = c
         def convert = c, "Y"
-        // If not "Y", will be false by default
     end
 
+    doc"""
+        three_valued_bool_column[c in String]
+    
+    Specifies a column name of `c` that can be either "Y" indicating true or "N" indicating false.
+    """
     module three_valued_bool_column[c]
         def column_name = c
         def convert = c, "Y", boolean_true
         def convert = c, "N", boolean_false
     end
 
+    doc"""
+        datetime_column[c in String]
+    
+    Specifies a column name of `c` with conversion relation to parse datetime values in the format "YYYY-mm-dd HH:MM:SS Z".
+    """
     module datetime_column[c]
         def column_name = c
         def convert = c, (v: parse_datetime[v, "YYYY-mm-dd HH:MM:SS Z"])
     end
 
+    doc"""
+        date_column[c in String]
+    
+    Specifies a column name of `c` with conversion relation to parse date values in the format "Y-m-d".
+    """
     module date_column[c]
         def column_name = c
         def convert = c, (v: parse_date[v, "Y-m-d"])
     end
 
+    doc"""
+        year_column[c in String]
+    
+    Specifies a column name of `c` with conversion relation to extract the year from a date in the format "Y".
+    """
     module year_column[c]
         def column_name = c
         def convert = c, (v: Year[date_year[parse_date[v, "Y"]]])
     end
 
+    doc"""
+        month_year_column[c in String]
+    
+    Specifies a column name of `c` with conversion relation to parse month-year values.
+    """
     module month_year_column[c]
         def column_name = c
         def convert = c, parse_month_year
     end
 
+    doc"""
+        int_feet_column[c in String]
+    
+    Specifies a column name of `c` with conversion relation to parse integer values representing feet.
+    """
     module int_feet_column[c]
         def column_name = c
         def convert = c, parse_int_feet
     end
 
+    doc"""
+        float_degree_column[c in String]
+    
+    Specifies a column name of `c` with conversion relation to parse float values representing degrees.
+    """
     module float_degree_column[c]
         def column_name = c
         def convert = c, parse_float_degree
     end
 
+    doc"""
+        table_info[R]
+    
+    Expand a minimal schema specification `R` to a complete specification, including `convert` relations and `rename` relations for all of the column names.
+    """
     module table_info[R]
         def primary_key = R:primary_key
         def column_name = R:column_name
@@ -65,10 +121,20 @@ module dataset_info
         def rename(c1, c2) = R:rename(c1, c2)
     end
 
+    doc"""
+        rename_column[c1, c2]
+    
+    `rename_column[c1, c2]` is a relation that specifies that `c1` should be renamed to `c2`.
+    """
     module rename_column[c1, c2]
         def rename = (c1, c2)
     end
 
+    doc"""
+        primary_key[name, c]
+    
+    Specifies the primary key should be obtained from the column `c` and should be constructed with the entity constructor named `name`.
+    """
     module primary_key[name, c]
         def entity_name = name
         def primary_key = c
@@ -86,10 +152,16 @@ module flight_dataset_info
         primary_key, bool_column, year_column, month_year_column,
         int_feet_column, float_degree_column
 
+    doc"""
+    Metadata specifying `carrier` schema.
+    """
     def carrier = table_info[
         primary_key[:Carrier, :code]
     ]
 
+    doc"""
+    Metadata specifying `aircraft` schema.
+    """
     def aircraft = table_info[
         primary_key[:Aircraft, :tail_num];
         int_column:aircraft_type_id;
@@ -104,6 +176,9 @@ module flight_dataset_info
         bool_column:fract_owner
     ]
 
+    doc"""
+    Metadata specifying `aircraft_model` schema.
+    """
     def aircraft_model = table_info[
         primary_key[:AircraftModel, :aircraft_model_code];
         int_column:aircraft_type_id;
@@ -116,6 +191,9 @@ module flight_dataset_info
         int_column:speed
     ]
 
+    doc"""
+    Metadata specifying `airport` schema.
+    """
     def airport = table_info[
         primary_key[:Airport, :id];
         int_column:id;
@@ -132,6 +210,9 @@ module flight_dataset_info
         three_valued_bool_column:mil_rts
     ]
 
+    doc"""
+    Metadata specifying `flight` schema.
+    """
     def flight = table_info[
         primary_key[:Flight, :id2];
         int_column:flight_time;
@@ -152,6 +233,9 @@ module flight_dataset_info
 
 end
 
+doc"""
+Apply the given `Schema` to the imported CSV file `CSV` to produce a schema-mapped relation.
+"""
 @inline
 def flight_file_mapping[CSV, Schema](col_renamed, k, v...) =
     CSV(key_col, pos, key_str) and
@@ -163,21 +247,39 @@ def flight_file_mapping[CSV, Schema](col_renamed, k, v...) =
     create_entity(entity_name, key_str, k)
     from key_col, key_str, val_str, col, pos, entity_name
 
+doc"""
+The schema-mapped `airport` relation.
+"""
 def airport =
     flight_file_mapping[airport_data, flight_dataset_info:airport]
 
+doc"""
+The schema-mapped `carrier` relation.
+"""
 def carrier =
     flight_file_mapping[carrier_data, flight_dataset_info:carrier]
 
+doc"""
+The schema-mapped `aircraft_model` relation.
+"""
 def aircraft_model =
     flight_file_mapping[aircraft_model_data, flight_dataset_info:aircraft_model]
 
+doc"""
+The schema-mapped `aircraft` relation.
+"""
 def aircraft =
     flight_file_mapping[aircraft_data, flight_dataset_info:aircraft]
 
+doc"""
+The schema-mapped `flight` relation.
+"""
 def flight =
     flight_file_mapping[flight_data_partpos, flight_dataset_info:flight]
 
+doc"""
+Helper relation for schema-mapping `flight` above.
+"""
 def flight_data_partpos[col] =
     ^PartPos[part, pos], flight_data[part, col, pos] from part, pos
 

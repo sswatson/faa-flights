@@ -1,3 +1,0 @@
-// This query returns the cardinalitty of all unary relations in the graph.
-
-def output[n] = count[v: flight_graph(n, v)]

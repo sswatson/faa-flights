@@ -1,6 +1,9 @@
 module flight_graph
+
     doc"""
-        State
+        State(x in Entity)
+    
+    Type check relation to determine if `x` is a `State`.
     """
     def State(x in Entity) =
         ^State(s, x) and
@@ -8,15 +11,27 @@ module flight_graph
         from s
 
     doc"""
-        Two-letter state abbreviation (ANSI, USPS)
+        abbr(x in State, s in String)
+    
+    Specifies the two-letter state abbreviation of the state `x`.
     """
     def abbr(x in State, s in String) =
         ^State(s, x) and
         airport:state(_, s)
 
+    doc"""
+        lookup_state(s in String, x in State)
+    
+    Retrieves the state `x` based on its abbreviation `s`.
+    """
     def lookup_state(s in String, x in State) =
         abbr(x, s)
 
+    doc"""
+        lookup_state(s in String, x in State)
+    
+    An alternative method to retrieve the state `x` based on its postal abbreviation `s`.
+    """
     def lookup_state(s in String, x in State) =
         flight_graph:postal_abbrevation(x, s)
 

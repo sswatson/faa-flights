@@ -1,32 +1,46 @@
 module flight_graph
+
     doc"""
-        County
+        County(x in Entity)
+    
+    Type check relation for the `County` entity.
     """
     def County(x) =
         lookup_county(_, _, x)
 
     doc"""
-        County by state and name
+        lookup_county(state in State, county in String, x in Entity)
+    
+    Determines if the entity `x` represents the county with name `county` located in `state`. 
+    Note: County names are not unique, so they are identified relative to the state.
     """
     def lookup_county(state in State, county in String, x in Entity) =
         airport:state(loc, state_code) and
         abbr(state, state_code) and
         airport:county(loc, county) and
-        // county names are not unique so the nodes need to be created with the state.
         ^County(state, county, x)
         from loc, state_code
 
+    doc"""
+        lookup_county(state in String, county in String, x in County)
+    
+    The county `x` represents the county named `county` in the state named `state`.
+    """
     def lookup_county(state in String, county in String, x in Entity) =
         lookup_county(flight_graph:lookup_state[state], county, x)
 
     doc"""
-        County is located in State.
+        located_in(county in County, state in State)
+    
+    The `county` is located in `state`.
     """
     def located_in(county in County, state in State) =
         lookup_county(state, _, county)
 
     doc"""
-        County name. Not unique.
+        name(county in County, s in String)
+    
+    Relates the entity `county` to its name `s`. Note that county names are not unique.
     """
     def name(county in County, s in String) =
         lookup_county(_, s, county)

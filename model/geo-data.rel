@@ -8,10 +8,28 @@ module geo_dataset_info
         rename_column[:Name, :name]
     ]
 end
+doc"""
+    flight_graph(
+        column_id in {
+            :FIPS; :name; :postal_abbreviation
+        }
+        s in State,
+        value in String
+    )
 
+The `column_id` value associated with the state `s` is equal to `value`.
+"""
 def flight_graph =
-    flight_file_mapping[states_data, geo_dataset_info:states]
+    flight_file_mapping[
+        states_data,
+        geo_dataset_info:states
+    ]
 
+doc"""
+    flight_graph:geojson(s in State, x...)
+
+`x...` is a unit of geojson data associated with the state `s`.
+"""
 def flight_graph:geojson[x] =
     us_states_geojson:features[:[], i]
     from i, id

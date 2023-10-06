@@ -11,6 +11,12 @@ entity type AircraftModel = String // ID
 entity type Airport = String // ID
 entity type Flight = String // ID
 
+doc"""
+`create_entity` can be used to construct entities 
+using the entity name as a symbol. This is necessary
+for doing generic entity construction as seen in
+schema-mapping.rel.
+"""
 module create_entity
     def Carrier[x] = ^Carrier[x]
     def Aircraft[x] = ^Aircraft[x]
@@ -36,14 +42,14 @@ def parse_month_year[s in String] =
         month = date_month[date] and
         year = date_year[date]
 
-@inline
+@overload @inline
 def (+)(x in Length, y in Length, z in Length) =
     ^Length(unit, val1, x) and
     ^Length(unit, val2, y) and
     ^Length(unit, add[val1, val2], z)
     from unit, val1, val2
 
-@inline
+@overload @inline
 def (/)(x in Length, y in Number, z in Length) =
     ^Length(unit, val1, x) and
     ^Length(unit, divide[val1, y], z)
@@ -70,7 +76,10 @@ value type Degree = Number
 
 value type Radian = Number
 
+doc"""Latitude-Longitude-Altitude"""
 value type LLA = Degree, Degree, Length
 
 def parse_float_degree[s in String] =
     ^Degree[parse_float[s]]
+
+value type Knot = Number
